@@ -1,4 +1,4 @@
-###TodoList
+### TodoList
 - [x] 2016/8/26   设计好服务器目录层级
 - [x] 2016/8/26   添加完成依赖库以及Vendor.json依赖库配置
 - [x] 2016/9/12   整理完成FKCommmonLib
@@ -8,14 +8,16 @@
 - [x] 2017/2/9    整理完成Tools
 - [x] 2017/3/14   整理完成Chat
 - [x] 2017/3/14   去除不受控的Vendor库
-- [ ] 整理完成Doc文档
+- [x] 2017/3/16   整理完成Doc文档
 - [ ] 添加大量单元test测试
 - [ ] 提交环境部署，并进行整合测试
 - [ ] 去冗余重复功能库，小单元依赖库整合
 - [ ] 向其他GameServer进行学习调整
+
 :brush::brush::brush::brush::brush:
 
-#说明
+# 说明
+
 [FKGoServer](https://github.com/duzhi5368)是一套游戏服务器框架。
 * 它采用[Go语言](http://golang.org)开发
 * 它采用[HTTP/2](http://http2.github.io/)作为服务器组内部主要通讯协议
@@ -23,11 +25,12 @@
 * 它采用[MicroService](http://martinfowler.com/articles/microservices.html)作为架构思想
 * 它采用[Docker](https://www.docker.com/)作为服务发布手段
 
+> 开发工具：  *IntelliJ IDEA ULTIMATE 2016*
 
-    开发工具：  IntelliJ IDEA ULTIMATE 2016
-    环境依赖：  Go 1.7.1
+> 环境依赖：  *Go 1.7.1*
 
-##基本项目组成
+## 基本项目组成
+
 * **FKLib_Common**          一些基本常用功能库包：提供给FKServer系列使用
 * **FKServer_Agent**        网关服务器，负责客户端连接安全以及消息解密转发
 * **FKServer_Game**         游戏逻辑服务器，负责客户端主体逻辑，它以RPC方式调用其他负责处理具体业务
@@ -42,8 +45,9 @@
 * **FKTools_Simulate**      工具：消息模拟器
 * **FKTools_CuiClient**     工具：Kafka可视化客户端
 
-#项目组成部分说明
-##【1】 Agent Server - 网关服务器
+# 项目组成部分说明
+
+## 1. Agent Server - 网关服务器
 
 ### 用途
 
@@ -81,7 +85,7 @@ Go语言编写的，用于游戏服务器组的，负责网关功能的服务器
 ### 安装
 参考Dockerfile
 
-##【2】 Game Server - 逻辑服务器
+## 2. Game Server - 逻辑服务器
 
 ### 设计理念
 游戏服务器对Agent只提供一个接口， 即:
@@ -106,7 +110,7 @@ Go语言编写的，用于游戏服务器组的，负责网关功能的服务器
 参考Dockerfile
 
 
-##【3】 RPC_SnowFlake 唯一ID生成器
+## 3. RPC_SnowFlake 唯一ID生成器
 
 ### 用途
 在分布式系统中，生成大量的唯一的有序的ID。它是一个分布式uuid发生器，Twitter snowflake的go语言版本。 
@@ -143,7 +147,7 @@ uuid格式为:
     MACHINE_ID:   eg: 123
     
 
-## 【4】RPC_WordFilter - 文字过滤
+## 4. RPC_WordFilter - 文字过滤
 
 ### 设计理念
 基于[Sego](https://github.com/huichen/sego) 实现
@@ -157,7 +161,7 @@ uuid格式为:
 ### 安装部署
 基于分词的文字过滤会消耗大量内存，**RPC_WordFilter**至少需要500M内存才能运行，建议每实例配置1GB。
 
-## 【5】RPC_GeoIP - IP查询
+## 5. RPC_GeoIP - IP查询
 
 ### 设计思路
 查询IP归属地，基于maxmind的geoip2库做的封装，如果需要最新的准确的数据，需要向maxmind购买。     
@@ -172,18 +176,18 @@ uuid格式为:
 ### 安装
 参考Dockerfile
 
-## 【6】RPC_Chat - 聊天
+##  6. RPC_Chat - 聊天
 
 ### 设计理念
 
      EndPoint:  消息收发点（对应到一个玩家的聊天，或者一个联盟聊天） 
      PubSub: 对任意EndPoint进行发布，订阅
 
-聊天服务器并不关心一个EndPoint对应的是一个玩家，还是一个联盟，只需要一个独立的id(snowflake-id)。       
-通常在玩家注册的时候，会创建一个EndPoint，创建一个联盟的时候，也会创建一个EndPoint。     
-玩家登陆后，会订阅到自己的私人EndPoint和所属联盟的EndPoint，以便接受实时聊天消息。      
-CHAT会保留一定数量的消息在内存中（默认128条），这个消息队列会定期持久化到本地磁盘，以便重启时候加载。       
-持久化采用boltdb，零配置, 数据存储在 VOLUME /data。        
+* 聊天服务器并不关心一个EndPoint对应的是一个玩家，还是一个联盟，只需要一个独立的id(snowflake-id)。       
+* 通常在玩家注册的时候，会创建一个EndPoint，创建一个联盟的时候，也会创建一个EndPoint。     
+* 玩家登陆后，会订阅到自己的私人EndPoint和所属联盟的EndPoint，以便接受实时聊天消息。      
+* CHAT会保留一定数量的消息在内存中（默认128条），这个消息队列会定期持久化到本地磁盘，以便重启时候加载。       
+* 持久化采用boltdb，零配置, 数据存储在 VOLUME /data。        
 
 基于PubSub的聊天服务器，优点在于可以通过多个途径**同时**访问到同一个EndPoint, 例如：      
 1. 游戏内     
@@ -196,20 +200,20 @@ CHAT会保留一定数量的消息在内存中（默认128条），这个消息�
 ### 安装
 参考Dockerfile
 
-## 【7】RPC_Rank - 排名
+##  7. RPC_Rank - 排名
 
 ### 设计理念
-对int32类型的id, score进行排名， 并用boltdb实现持久化。      
-排名依据score进行，可以获得范围，比如［1，100］名的列表，可以定位某个玩家的排名，比如id为1234的排名。      
-排名包含无限个集合，根据id(snowflake-id)区分，用户根据业务需求创建。          
-持久化采用boltdb，零配置, 数据存储在 volume /data 。      
+* 对int32类型的id, score进行排名， 并用boltdb实现持久化。      
+* 排名依据score进行，可以获得范围，比如［1，100］名的列表，可以定位某个玩家的排名，比如id为1234的排名。      
+* 排名包含无限个集合，根据id(snowflake-id)区分，用户根据业务需求创建。          
+* 持久化采用boltdb，零配置, 数据存储在 volume /data 。      
 
 ### 性能
 采用混合策略做排名:           
 1. 数据量小于1024(暂定)的时候，采用sortedset实现, 大部分操作时间复杂度为O(n)       
 2. 超过之后采用rbtree实现, 时间复杂度O(logN)。         
 
-sortedset的紧凑存储结构能充分利用cpu cache，而对rbtree的访问基本是全部cache miss;        所以必须在达到一定数据量之后，算法时间复杂度提升才能弥补cache miss.         
+sortedset的紧凑存储结构能充分利用cpu cache，而对rbtree的访问基本是全部cache miss; 所以必须在达到一定数据量之后，算法时间复杂度提升才能弥补cache miss.         
 
 ### 使用
 参考测试用例以及rank.proto文件
@@ -217,45 +221,49 @@ sortedset的紧凑存储结构能充分利用cpu cache，而对rbtree的访问�
 ### 安装
 参考Dockerfile
 
-#工具说明
+# 工具说明
 
     TODO:
 
-#支持库说明
-1. **github/Shopify/sarama**是一个针对Apache Kafka的客户端库。
-1. **github.com/Sirupsen/logrus**是一个和标准库中的logger完全兼容的加强日志库。
-1. **github.com/adamzy/cedar-go**是一个非线程安全的DAT（双数组字典树）的实现。
-1. **github.com/boltdb/bolt**是一个小型的嵌入式的，可序列化的，事务性的，Key/Value存储数据库。
-1. **github.com/coreos/etcd**是一个分布式的Key/Value存储软件，用于配置共享和服务发现。
-1. **github.com/davecgh/go-spew/spew**是一个调试分析时常使用的，对Go数据进行格式化输出的库。
-1. **github.com/eapache/go-resiliency/breaker**是一个简单的熔断器模式。
-1. **github.com/eapache/queue**是一个线程不安全的，但内存占用和时间效率很高的环形缓冲区队列。
-1. **github.com/golang/protobuf/proto**是Google Protobuf的Go语言版本。
-1. **github.com/golang/snappy**是Snappy压缩算法的Go语言版本，该算法的压缩速率极快。
-1. **github.com/huichen/sego**是进行中文分词的库。
-1. **github.com/jroimartin/gocui**是创建控制台的用户界面库。
-1. **github.com/peterbourgon/g2s**是简单的对StatsD的封装库，是用来性能监察的。
-1. **github.com/oschwald/maxminddb-golang**是MaxMind DB格式的读取器库。
-1. **github.com/tealeg/xlsx**是一个读取和写入Micrsoft Excel生成的xlsx格式的库。
-1. **github.com/klauspost/cpuid**获取本机CPU信息的库。
-1. **github.com/klauspost/crc32**超快性能的Crc32哈希库。
-1. **github.com/klauspost/reedsolomon**超快性能的里德-所罗门纠错算法。
-1. **github.com/mattn/go-runewidth**获取字符或字符串宽度的函数库，支持多语言。
-1. **github.com/nsf/termbox-go**是一套简易的，跨平台的，基于文本操作的用户界面。
-1. **github.com/pkg/errors**是一个错误处理的加强包。
-1. **github.com/pierrec/lz4**一个LZ4压缩和解压缩库。
-1. **github.com/pierrec/xxHash/xxHash32**是一个非常快速的散列算法库。
-1. **github.com/rcrowley/go-metrics**是一个类似Java Metrics的便捷的程序性能监测库。
-1. **github.com/ugorji/go/codec**是一个高性能的，功能丰富的常用编码/解码库和RPC库。
-1. **github.com/xtaci/logrushooks**一个简单的Logrus的Hook库。
-1. **github.com/xtaci/kcp-go**一个快速的，可靠的，有序的UDP库。
-1. **gopkg.in/mgo.v2**一个MangoDB的Go语言驱动库。
-1. **gopkg.in/urfave/cli.v2**一个构建控制台命令行的库。
-1. **gopkg.in/vmihailenco/msgpack.v2**一个高效的二进制序列化格式，类似Protobuf,但性能更好。
-1. **google.golang.org/grpc** 一个高性能的远程过程调用(RPC)框架，面向移动和HTTP/2设计。
-1. **github.com/golang/x/net/http2**google自带的HTTP2通讯协议库。
+# 支持库说明
 
-###github/Shopify/sarama
+| 链接  | 说明 |
+| ----- | ----------- |
+|  **github/Shopify/sarama**                        |  是一个针对Apache Kafka的客户端库。|  
+|  **github.com/Sirupsen/logrus**                   |  是一个和标准库中的logger完全兼容的加强日志库。|  
+|  **github.com/adamzy/cedar-go**                   |  是一个非线程安全的DAT（双数组字典树）的实现。|  
+|  **github.com/boltdb/bolt**                       |  是一个小型的嵌入式的，可序列化的，事务性的，Key/Value存储数据库。|  
+|  **github.com/coreos/etcd**                       |  是一个分布式的Key/Value存储软件，用于配置共享和服务发现。|  
+|  **github.com/davecgh/go-spew/spew**              |  是一个调试分析时常使用的，对Go数据进行格式化输出的库。|  
+|  **github.com/eapache/go-resiliency/breaker** |  是一个简单的熔断器模式。|  
+|  **github.com/eapache/queue**                     |  是一个线程不安全的，但内存占用和时间效率很高的环形缓冲区队列。|  
+|  **github.com/golang/protobuf/proto**             |  是一个Google Protobuf的Go语言版本。|  
+|  **github.com/golang/snappy**                     |  是一个Snappy压缩算法的Go语言版本，该算法的压缩速率极快。|  
+|  **github.com/huichen/sego**                      |  是一个进行中文分词的库。|  
+|  **github.com/jroimartin/gocui**                  |  是一个创建控制台的用户界面库。|  
+|  **github.com/peterbourgon/g2s**                  |  是一个简单的对StatsD的封装库，是用来性能监察的。|  
+|  **github.com/oschwald/maxminddb-golang**         |  是一个MaxMind DB格式的读取器库。|  
+|  **github.com/tealeg/xlsx**                       |  是一个读取和写入Micrsoft Excel生成的xlsx格式的库。|  
+|  **github.com/klauspost/cpuid**                   |  是一个获取本机CPU信息的库。|  
+|  **github.com/klauspost/crc32**                   |  是一个超快性能的Crc32哈希库。|  
+|  **github.com/klauspost/reedsolomon**             |  是一个超快性能的里德-所罗门纠错算法。|  
+|  **github.com/mattn/go-runewidth**                |  是一个获取字符或字符串宽度的函数库，支持多语言。|  
+|  **github.com/nsf/termbox-go**                    |  是一个简易的，跨平台的，基于文本操作的用户界面。|  
+|  **github.com/pkg/errors**                        |  是一个错误处理的加强包。|  
+|  **github.com/pierrec/lz4**                       |  是一个LZ4压缩和解压缩库。|  
+|  **github.com/pierrec/xxHash/xxHash32**       |  是一个非常快速的散列算法库。|  
+|  **github.com/rcrowley/go-metrics**           |  是一个类似Java Metrics的便捷的程序性能监测库。|  
+|  **github.com/ugorji/go/codec**               |  是一个高性能的，功能丰富的常用编码/解码库和RPC库。|  
+|  **github.com/xtaci/logrushooks**             |  是一个简单的Logrus的Hook库。|  
+|  **github.com/xtaci/kcp-go**                  |  是一个快速的，可靠的，有序的UDP库。|  
+|  **gopkg.in/mgo.v2**                          |   是一个MangoDB的Go语言驱动库。|  
+|  **gopkg.in/urfave/cli.v2**                   |  是一个构建控制台命令行的库。|  
+|  **gopkg.in/vmihailenco/msgpack.v2**          |  是一个高效的二进制序列化格式，类似Protobuf,但性能更好。|  
+|  **google.golang.org/grpc**                   |  是一个高性能的远程过程调用(RPC)框架，面向移动和HTTP/2设计。|  
+|  **github.com/golang/x/net/http2**            |  是一个google自带的HTTP2通讯协议库。|  
+
+### github/Shopify/sarama
+
 **用途**
 
 Sarama是一个GO语言开发的，针对[Apache Kafka](https://kafka.apache.org/) 0.8以上版本的客户端库。
@@ -278,7 +286,8 @@ Sarama是一个GO语言开发的，针对[Apache Kafka](https://kafka.apache.org
 * [The Guide of Kafka](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
 * [Kafka论坛](https://groups.google.com/forum/#!forum/kafka-clients)
     
-###github.com/Sirupsen/logrus
+### github.com/Sirupsen/logrus
+
 **用途**
 
 logrus是一个结构化的Go日志库，它和标准库中的logger完全兼容。
@@ -452,7 +461,9 @@ func main() {
 **推荐资料**
 
 * [Go Doc](https://godoc.org/github.com/Sirupsen/logrus#TextFormatter)
-###github.com/adamzy/cedar-go
+
+### github.com/adamzy/cedar-go
+
 **用途**
 
 这是一个DAT（双数组字典树）的实现。当前版本它是非线程安全的，如果你多协程进行删插将会出现问题。
@@ -531,7 +542,7 @@ func main() {
     309 姑苏城外:5
     318 姑苏城外寒山寺:6
 
-###github.com/boltdb/bolt
+### github.com/boltdb/bolt
 
 **用途**
 
@@ -578,7 +589,8 @@ Bolt是一个Go语言编写的，小型的便于嵌入的，可序列化的，�
 * [bolter](https://github.com/hasit/bolter) - Command-line app for viewing BoltDB file in your terminal.
 * [BoltHold](https://github.com/timshannon/bolthold) - An embeddable NoSQL store for Go types built on BoltDB
 
-###github.com/coreos/etcd
+### github.com/coreos/etcd
+
 **用途**
 
 ETCD是一个Go编写的，分布式的Key/Value存储软件，用于配置共享和服务发现。
@@ -605,8 +617,10 @@ ETCD是一个Go编写的，分布式的Key/Value存储软件，用于配置共�
 * [安装和部署ETCD](http://play.etcd.io/install)
 * [下载ETCD](https://github.com/coreos/etcd/releases/)
 
-###github.com/davecgh/go-spew/spew
+### github.com/davecgh/go-spew/spew
+
 **用途**
+
 Go-Spew是一个对Go数据进行格式化输出的库，它通常在调试时候使用。
 
 **简要说明**
@@ -666,7 +680,8 @@ spew.Fprintf(someWriter, "myVar3: %#v -- myVar4: %#+v", myVar3, myVar4)
 * [博客](https://web.archive.org/web/20160304013555/https://blog.cyphertite.com/go-spew-a-journey-into-dumping-go-data-structures/)
 * [Go doc](http://godoc.org/github.com/davecgh/go-spew/spew)
 
-###github.com/eapache/go-resiliency/breaker
+### github.com/eapache/go-resiliency/breaker
+
 **用途**
 
 这是一个简单的熔断器模式。
@@ -701,12 +716,14 @@ for {
 
 * [熔断器模式](http://blog.csdn.net/joeyangy/article/details/43112687)
 
-###github.com/eapache/queue
+### github.com/eapache/queue
+
 **用途**
 
 一个线程不安全的，但内存占用和时间效率很高的环形缓冲区队列。
 
-###github.com/golang/protobuf/proto
+### github.com/golang/protobuf/proto
+
 **用途**
 
 它是Google Protobuf的Go语言版本。
@@ -750,12 +767,15 @@ for {
 
 **推荐资料**
 * [Protobuf说明](https://developers.google.com/protocol-buffers/)
-###github.com/golang/snappy
+
+### github.com/golang/snappy
+
 **用途**
 
 Google Snappy压缩算法的Go语言版本。该算法的压缩速率极快，但压缩结果会比zip大20%-80%左右。
 
-###github.com/huichen/sego
+### github.com/huichen/sego
+
 **用途**
 
 Go中文分词库
@@ -790,7 +810,7 @@ func main() {
 	fmt.Println(sego.SegmentsToString(segments, false)) 
 }
 ```
-###github.com/jroimartin/gocui
+### github.com/jroimartin/gocui
 
 **用途**
 
@@ -862,7 +882,9 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 * [wuzz](https://github.com/asciimoo/wuzz): Interactive cli tool for HTTP inspection.
 * [httplab](https://github.com/gchaincl/httplab): Interactive web server.
 * [domainr](https://github.com/MichaelThessel/domainr): Tool that checks the availability of domains based on keywords.
-###github.com/peterbourgon/g2s
+
+### github.com/peterbourgon/g2s
+
 **用途**
 
 Statsd的封装库。
@@ -893,7 +915,8 @@ if err != nil {
 s.Counter(1.0, "this.gets.prefixed", 1)
 ```
 
-###github.com/oschwald/maxminddb-golang
+### github.com/oschwald/maxminddb-golang
+
 **用途**
 
 这是MaxMind DB格式的读取器库。
@@ -904,7 +927,8 @@ s.Counter(1.0, "this.gets.prefixed", 1)
 
 * [Go doc](http://godoc.org/github.com/oschwald/maxminddb-golang)
     
-###github.com/tealeg/xlsx
+### github.com/tealeg/xlsx
+
 **用途**
 
 XLSX是一个读取和写入Micrsoft Excel生成的xlsx格式的库。
@@ -971,7 +995,8 @@ func main() {
 * [Go doc](https://godoc.org/github.com/tealeg/xlsx)
 * [xlsx2csv](https://github.com/tealeg/xlsx2csv)
     
-###github.com/klauspost/cpuid
+### github.com/klauspost/cpuid
+
 **用途**
 
 用来获取当前程序所在CPU信息的库。
@@ -1017,13 +1042,15 @@ func main() {
     Cacheline bytes: 64
     We have Streaming SIMD Extensions
 
-###github.com/klauspost/crc32
+### github.com/klauspost/crc32
+
 **用途**
 
 用来替换标准库中的 `hash/crc32` .
 * 它在 x64 平台上具有SSE 4.2优化功能，可以性能提高10倍。
 
-###github.com/klauspost/reedsolomon
+### github.com/klauspost/reedsolomon
+
 **用途**
 
 RS（里德-所罗门）纠错算法。
@@ -1045,7 +1072,8 @@ RS（里德-所罗门）纠错算法。
 * [rsraid](https://github.com/goayame/rsraid). A similar library written in Go. Slower, but supports more shards.
 * [Screaming Fast Galois Field Arithmetic](http://www.snia.org/sites/default/files2/SDC2013/presentations/NewThinking/EthanMiller_Screaming_Fast_Galois_Field%20Arithmetic_SIMD%20Instructions.pdf). Basis for SSE3 optimizations.
 
-###github.com/mattn/go-runewidth
+### github.com/mattn/go-runewidth
+
 **用途**
 
 获取字符或字符串宽度的函数库，支持多语言。
@@ -1054,13 +1082,14 @@ RS（里德-所罗门）纠错算法。
 ```go
 runewidth.StringWidth("つのだ☆HIRO") == 12
 ```
-###github.com/nsf/termbox-go
+### github.com/nsf/termbox-go
+
 **用途**
 
 是一套简易的，跨平台的，基于文本操作的用户界面。
 
 **推荐资料**
-
+ - [Go doc](http://godoc.org/github.com/nsf/termbox-go)
  - [godit](https://github.com/nsf/godit) is an emacsish lightweight text editor written using termbox.
  - [gomatrix](https://github.com/GeertJohan/gomatrix) connects to The Matrix and displays its data streams in your terminal.
  - [gotetris](https://github.com/jjinux/gotetris) is an implementation of Tetris.
@@ -1081,10 +1110,8 @@ runewidth.StringWidth("つのだ☆HIRO") == 12
  - [rat](https://github.com/ericfreese/rat) lets you compose shell commands to build terminal applications.
  - [httplab](https://github.com/gchaincl/httplab) An interactive web server.
 
-### API reference
- * [Go doc](http://godoc.org/github.com/nsf/termbox-go)
+### github.com/pkg/errors
 
-###github.com/pkg/errors
 **用途**
 
 是一个错误处理的加强包
@@ -1131,13 +1158,15 @@ if err, ok := err.(stackTracer); ok {
 **推荐资料**
 - [Go doc](https://godoc.org/github.com/pkg/errors)
 
-###github.com/pierrec/lz4
+### github.com/pierrec/lz4
+
 **用途**
 
 LZ4压缩和解压缩库。
 LZ4是速度最快的压缩和解压缩库。
 
-###github.com/pierrec/xxHash/xxHash32
+### github.com/pierrec/xxHash/xxHash32
+
 **用途**
 
 是一个非常快速的散列算法库。
@@ -1162,7 +1191,8 @@ import (
 **推荐资料**
 * [散列算法速度比较](https://github.com/Cyan4973/xxHash/)
 
-###github.com/rcrowley/go-metrics
+### github.com/rcrowley/go-metrics
+
 **用途**
 
 一个类似Java Metrics的便捷的程序性能监测库。
@@ -1256,7 +1286,8 @@ go stathat.Stathat(metrics.DefaultRegistry, 10e9, "example@example.com")
 * Ganglia - [https://github.com/appscode/metlia](https://github.com/appscode/metlia)
 * Prometheus - [https://github.com/deathowl/go-metrics-prometheus](https://github.com/deathowl/go-metrics-prometheus)
 
-###github.com/ugorji/go/codec
+### github.com/ugorji/go/codec
+
 **用途**
 
 **核心组成**
@@ -1326,12 +1357,14 @@ client := rpc.NewClientWithCodec(rpcCodec)
 * [Go doc](http://godoc.org/github.com/ugorji/go/codec)
 * [使用向导](http://ugorji.net/blog/go-codec-primer)
 
-###github.com/xtaci/logrushooks
+### github.com/xtaci/logrushooks
+
 **用途**
 
 一个简单的Logrus的Hook库。
 
-###github.com/xtaci/kcp-go
+### github.com/xtaci/kcp-go
+
 **用途**
 
 快速的可靠的有序的UDP库
@@ -1385,7 +1418,8 @@ client := rpc.NewClientWithCodec(rpcCodec)
 * [服务器完整代码样例](https://github.com/xtaci/kcptun/blob/master/server/main.go)
 * [推荐参考 Kcptun](https://github.com/xtaci/kcptun)
 
-###gopkg.in/mgo.v2
+### gopkg.in/mgo.v2
+
 **用途**
 
 MangoDB的Go语言驱动库。
@@ -1440,7 +1474,8 @@ func main() {
 * [MgoBson文档](http://gopkg.in/mgo.v2/bson)
 * [MgoTxn文档](http://gopkg.in/mgo.v2/txn)
 
-###gopkg.in/vmihailenco/msgpack.v2
+### gopkg.in/vmihailenco/msgpack.v2
+
 **用途**
 
 msgpack是一个高效的二进制序列化格式，支持多种语言之间进行数据交换。
@@ -1475,7 +1510,8 @@ func ExampleMarshal() {
 - [例子](https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples)
 - [MsgPack官网](http://msgpack.org/)
 
-###google.golang.org/grpc
+### google.golang.org/grpc
+
 **用途**
 
 gRPC是一个高性能，开源和通用的远程过程调用(RPC)框架，面向移动和HTTP/2设计，支持大部分语言。
@@ -1493,7 +1529,7 @@ gRPC是一个高性能，开源和通用的远程过程调用(RPC)框架，面�
 * [RPC简介](http://doc.oschina.net/grpc?t=60133)
     
 
-###gopkg.in/urfave/cli.v2
+### gopkg.in/urfave/cli.v2
 
 **用途**
 
@@ -1556,7 +1592,8 @@ gRPC是一个高性能，开源和通用的远程过程调用(RPC)框架，面�
         }
     }
 ```
-###github.com/golang/x/net/http2
+### github.com/golang/x/net/http2
+
 **用途**
 
 使用**HTTP/2**协议作为服务端内部通讯协议
@@ -1570,31 +1607,32 @@ gRPC是一个高性能，开源和通用的远程过程调用(RPC)框架，面�
 * [Http2测试](https://http2.golang.org)
 * [使用样例](https://github.com/golang/net/blob/master/http2/h2demo)
 
-#其他补充
-##HTTP/2协议
+# 其他补充
 
-###概述
+## HTTP/2协议
+
+### 概述
 
 **HTTP/2** 依然是一个基于TCP的面向请求的协议。客户端向服务端发送请求，服务端生成响应并将其发回。（ServerPush是个小例外）
 
-HTTP/2是HTTP的升级替代品，而不是一个协议的基础重写。在状态代码和语义上两者是相同的，HTTP/2兼容HTTP/1.x。
-它的设计目的是比HTTP更加高性能，低延迟，更充分的利用网络流量资源的让用户通过浏览器来访问指定网站。
+1. HTTP/2是HTTP的升级替代品，而不是一个协议的基础重写。在状态代码和语义上两者是相同的，HTTP/2兼容HTTP/1.x。
+1. 它的设计目的是比HTTP更加高性能，低延迟，更充分的利用网络流量资源的让用户通过浏览器来访问指定网站。
 
-###比较
-**HTTP/2**基于**SPDY/2**为基础开发，但和SPDY仍有不同的地方如下：
+### 比较
+1. **HTTP/2**基于**SPDY/2**为基础开发，但和SPDY仍有不同的地方如下：
 
-1. HTTP/2 支持明文HTTP传输，而SPDY强制使用HTTPS。
-1. HTTP/2 消息头压缩算法采用[HPACK](http2.github.io/http2-spec/compression.html)，而SPDY消息头压缩算法采用的是[DEFLATE](https://zh.wikipedia.org/wiki/DEFLATE)。
+* HTTP/2 支持明文HTTP传输，而SPDY强制使用HTTPS。
+* HTTP/2 消息头压缩算法采用[HPACK](http2.github.io/http2-spec/compression.html)，而SPDY消息头压缩算法采用的是[DEFLATE](https://zh.wikipedia.org/wiki/DEFLATE)。
 
-**HTTP/2**和**HTTP/1.x**的比较
+1. **HTTP/2**和**HTTP/1.x**的比较
 
-1. HTTP/2 采用二进制格式进行数据传输； HTTP/1.x 采用文本格式进行数据传输。HTTP/2 在协议的解析和优化扩展上有更多优势和可能，但调试麻烦一些。
-1. HTTP/2 对消息头采用HPACK压缩，节省了消息头占用的网络流量； HTTP/1.x 则不进行压缩，会有冗余头信息的流量浪费。
-1. HTTP/2 支持多路复用，即将多有请求通过一个TCP连接并发完成； HTTP/1.x 则不支持。
-1. HTTP/2 支持消息的优先级和流量控制；Http/1.x 则不支持。
-1. HTTP/2 支持Server Push，例如服务器端可以主动将JS和CSS文件推送给客户端，而不需要客户端解析HTML再发送请求了；Http/1.x 不支持Server Push.
+* HTTP/2 采用二进制格式进行数据传输； HTTP/1.x 采用文本格式进行数据传输。HTTP/2 在协议的解析和优化扩展上有更多优势和可能，但调试麻烦一些。
+* HTTP/2 对消息头采用HPACK压缩，节省了消息头占用的网络流量； HTTP/1.x 则不进行压缩，会有冗余头信息的流量浪费。
+* HTTP/2 支持多路复用，即将多有请求通过一个TCP连接并发完成； HTTP/1.x 则不支持。
+* HTTP/2 支持消息的优先级和流量控制；Http/1.x 则不支持。
+* HTTP/2 支持Server Push，例如服务器端可以主动将JS和CSS文件推送给客户端，而不需要客户端解析HTML再发送请求了；Http/1.x 不支持Server Push.
 
-###实现原理
+### 实现原理
 
 **二进制Frame和特性说明**
 
@@ -1618,27 +1656,34 @@ HTTP/2 的底层数据格式是Frame，它类似于TCP里面的二进制数据�
             1.5：R是保留位。该值必须设置为0。
             1.6：StreamIdentifier本Frame所属的流ID。当客户端和服务端建立TCP连接时，会先发送一个StreamID = 0的流做一些初始化工作。之后客户端和服务端从1号流开始发送请求响应。
             1.7：一个Frame由两大部分组成。上面72bits属于Frame Header下面为Frame Payload。
+            
         2：对HTTP 1.x的兼容
             2.1：原来HTTP 1.x的HTTP header以及HTTP body都会存储在Frame Payload中，仅仅将Frame Header的Type标示一下这是HTTP 1.x格式。
+            
         3：HPACK 压缩原理
             3.1:Frame Header使用 HPACK 进行压缩时，会先使用静态表(注1)进行转义压缩，还会使用动态表(注2)进行消息简化。
             3.2 HPACK 对HTTP/2所有头帧进行处理，包括 HEADERS，CONTINUATION, PUSH_PROMISE 三种头帧均受其约束。
             3.3 因为动态表的存在，在第一次请求之后，大多数的头会被标示为动态表或者静态表中的整数索引，大幅度缩小重复的头信息。
             3.4 因为 HPACK 支持霍夫曼编码，该编码为固定编码表，不容易受到基于压缩的攻击方式（例如CRIME）的攻击。
+            
         4：Multipexing 多路复用原理
             4.1 Frame格式中有一个流ID，我们是使用它进行多路复用的：多个流可能被分配在一个TCP连接中，在分发处理的时候通过FrameID进行分发。
             4.2 每次请求/响应我们使用不同的Frame ID，这样我们就可以在一个TCP连接中通讯大量的Frame了。（注4）
+            
         5：Server-Push 服务器推送 
             5.1 该功能是SPDY协议首先引入，它的目的是服务器允许主动向客户端进行推送行为。（注5）
+            
         6：Priority 流优先级
             6.1 该功能允许客户端指定流的优先级，但这个功能是非强制的，服务端可以忽略它。
             6.2 流的优先级可以在流创建时进行设置，过程中可以使用 PRIORITY 帧进行动态修改。
             6.3 流的优先级可以赋予1-256之间的权重。
             6.4 流可以指定流之间的依赖性，该依赖性会破坏流优先级的依赖关系。
+            
         7：数据流量控制
             7.1 HTTP/2 每个流都有自己的流量窗口，它可以限制另一段发送的数据总量。
             7.2 如果数据量不足，发出端可以向接受端发送 WINDOW_UPDATE 帧消息来请求申请更多的空间来接受新数据。
             7.3 注意：只有 DATA 数据帧会受到流量控制。
+            
         8：Setting 设置
             7.1 HTTP/2 框架允许设置一系列用于控制连接的设置，规范可参见(注6)
             7.2 每个设置是单向有效的，（从C->S，从S->C）设置可以不对称。
@@ -1706,7 +1751,7 @@ HTTP/2 的底层数据格式是Frame，它类似于TCP里面的二进制数据�
         SETTINGS_MAX_FRAME_SIZE         远程端点准备接受的最大帧大小            默认值16384
         SETTINGS_MAX_HEADER_LIST_SIZE   建议远程端点接受的头列表最大大小        默认值无限
 
-###一个简单的请求/响应流程
+### 一个简单的请求/响应流程
 
 【1】请求由客户端发送 HEADERS 帧，打开一个流开始。
     
@@ -1751,12 +1796,12 @@ HTTP/2 的底层数据格式是Frame，它类似于TCP里面的二进制数据�
                                                 {Binary data} ...
                                             +---------------------------+ 
 
-###简单性能测试
+### 简单性能测试
 
 * 你可以访问[AakamaiDemo](https://http2.akamai.com/demo)测试了解其性能。
 * 你可以下载[LoadImpact](https://loadimpact.com/http2old)进行对比测试。
 
-###使用与调试
+### 使用与调试
 
 * 根据[CanIUse](caniuse.com/#search=HTTP%2F2)统计，浏览器部分支持HTTP/2的包括Chrome 41+, FireFox 36+, Safari 9+, Windows10上的IE11和Edge.
 * 你可以从[这里](https://github.com/http2/http2-spec/wiki/Implementations)获取最新的各种语言的HTTP/2服务库。
@@ -1764,7 +1809,7 @@ HTTP/2 的底层数据格式是Frame，它类似于TCP里面的二进制数据�
 * 在Chrome中按下F12，进入开发者工具中可以查看Network部分，以获取帧信息。
 * 你可以使用**curl** 这样的工具来调试协议，也可以使用**Wireshark** 查看HTTP/2帧信息。
 
-###参考书籍
+### 参考书籍
 
 1. [HTTP2讲解](https://yellow.gitbooks.io/http2-explained/content) 【中文】
 1. [HTTPBis小组邮件列表和归档](http://lists.w3.org/Archives/Public/ietf-http-wg/)
@@ -1775,14 +1820,18 @@ HTTP/2 的底层数据格式是Frame，它类似于TCP里面的二进制数据�
 1. [http2的FAQ](http://http2.github.io/faq/)
 1. [High Performance Browser Networking](http://chimera.labs.oreilly.com/books/1230000000545/ch12.html)
 
-##MicroService 微服务架构
-###概述
+## MicroService 微服务架构
+
+### 概述
+
 微服务是一种架构理念。目的是有效的拆分应用功能，实现业务解耦，适合敏捷开发和部署。它具备以下特点：
+
 * 一系列的独立的服务，共同组成一个系统。
 * 每个服务有独立进程，可以独立部署。
 * 每个服务拥有独立的业务。
 * 可以分布式的管理。
-###优点
+### 优点
+
 * 每个子服务都可以独立于其他服务执行，因此它具有更好的服务边界。
 * 每个子服务代码更加容易理解和维护。
 * 每个子服务可以选择最适合实现业务逻辑的技术，进行新技术更替时更为便捷。
@@ -1792,7 +1841,9 @@ HTTP/2 的底层数据格式是Frame，它类似于TCP里面的二进制数据�
 * 适合多人协同开发，降低沟通成本。
 * 减少编译时间，减少启动消耗。
 * 每个服务允许用不同的语言进行开发。
-###缺点
+
+### 缺点
+
 * 当子服务之间有配合需求时，保证其数据一致性非常痛苦。
 * 进行跨子服务的集成测试代价很大。
 * 基于性能考虑，各子服务提供的API接口应当是粗粒度的，有高灵活性的API。而这种API使用难度较高。
